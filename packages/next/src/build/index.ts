@@ -549,12 +549,10 @@ async function writeClientSsgManifest(
     buildId,
     distDir,
     locales,
-    deploymentId,
   }: {
     buildId: string
     distDir: string
     locales: readonly string[] | undefined
-    deploymentId: string
   }
 ) {
   const ssgPages = new Set<string>(
@@ -571,12 +569,11 @@ async function writeClientSsgManifest(
     ssgPages
   )};self.__SSG_MANIFEST_CB&&self.__SSG_MANIFEST_CB()`
 
-  // When skew protection is enabled, we instead just rely on the deployment id query string to
-  // load the correct manifests, to avoid the build id.
-  let ssgManifestPath = deploymentId
-    ? path.join(CLIENT_STATIC_FILES_PATH, '_ssgManifest.js')
-    : path.join(CLIENT_STATIC_FILES_PATH, buildId, '_ssgManifest.js')
-
+  let ssgManifestPath = path.join(
+    CLIENT_STATIC_FILES_PATH,
+    buildId,
+    '_ssgManifest.js'
+  )
   await writeFileUtf8(
     path.join(distDir, ssgManifestPath),
     clientSsgManifestContent
@@ -2596,16 +2593,11 @@ export default async function build(
               2
             )};self.__MIDDLEWARE_MATCHERS_CB && self.__MIDDLEWARE_MATCHERS_CB()`
 
-            let clientMiddlewareManifestPath = config.deploymentId
-              ? path.join(
-                  CLIENT_STATIC_FILES_PATH,
-                  TURBOPACK_CLIENT_MIDDLEWARE_MANIFEST
-                )
-              : path.join(
-                  CLIENT_STATIC_FILES_PATH,
-                  buildId,
-                  TURBOPACK_CLIENT_MIDDLEWARE_MANIFEST
-                )
+            let clientMiddlewareManifestPath = path.join(
+              CLIENT_STATIC_FILES_PATH,
+              buildId,
+              TURBOPACK_CLIENT_MIDDLEWARE_MANIFEST
+            )
 
             await writeFileUtf8(
               path.join(distDir, clientMiddlewareManifestPath),
@@ -3962,7 +3954,6 @@ export default async function build(
           distDir,
           buildId,
           locales: config.i18n?.locales,
-          deploymentId: config.deploymentId,
         })
       } else {
         await writePrerenderManifest(distDir, {
