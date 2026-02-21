@@ -335,26 +335,25 @@ describe(`Terminal Logging (${bundlerName})`, () => {
        https://react.dev/link/hydration-mismatch
 
          ...
-           <RenderFromTemplateContext>
-             <ScrollAndMaybeFocusHandler segmentPath={[...]}>
-               <${innerScrollAndMaybeFocusHandlerName} segmentPath={[...]} focusAndScrollRef={{apply:false, ...}}>
-                 <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
-                   <LoadingBoundary name="hydration-..." loading={null}>
-                     <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
-                       <RedirectBoundary>
-                         <RedirectErrorBoundary router={{...}}>
-                           <InnerLayoutRouter url="/hydration..." tree={[...]} params={{}} cacheNode={{rsc:<Fragment>, ...}} ...>
-                             <SegmentViewNode type="page" pagePath="hydration-...">
-                               <SegmentTrieNode>
-                               <ClientPageRoot Component={function Page} serverProvidedParams={{...}}>
-                                 <Page params={Promise} searchParams={Promise}>
-                                   <div>
-                                     <p>
-       +                               client
-       -                               server
-                             ...
+           <ScrollAndMaybeFocusHandler segmentPath={[...]}>
+             <${innerScrollAndMaybeFocusHandlerName} segmentPath={[...]} focusAndScrollRef={{apply:false, ...}}>
+               <ErrorBoundary errorComponent={undefined} errorStyles={undefined} errorScripts={undefined}>
+                 <LoadingBoundary name="hydration-..." loading={null}>
+                   <HTTPAccessFallbackBoundary notFound={undefined} forbidden={undefined} unauthorized={undefined}>
+                     <RedirectBoundary>
+                       <RedirectErrorBoundary router={{...}}>
+                         <InnerLayoutRouter url="/hydration..." tree={[...]} params={{}} cacheNode={{rsc:{...}, ...}} ...>
+                           <SegmentViewNode type="page" pagePath="hydration-...">
+                             <SegmentTrieNode>
+                             <ClientPageRoot Component={function Page} serverProvidedParams={{...}}>
+                               <Page params={Promise} searchParams={Promise}>
+                                 <div>
+                                   <p>
+       +                             client
+       -                             server
                            ...
-                 ...
+                         ...
+               ...
 
            at <unknown> (https://react.dev/link/hydration-mismatch)
            at p (<anonymous>)
