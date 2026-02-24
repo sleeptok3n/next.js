@@ -9,6 +9,7 @@ import { quote as shellQuote } from 'shell-quote'
 export class NextStartInstance extends NextInstance {
   private _buildId: string
   private _deploymentId: string | undefined
+  private _immutableAssetToken: string | undefined
   private _cliOutput: string = ''
 
   private _prerenderFinishedTimeMS: number | null = null
@@ -19,6 +20,10 @@ export class NextStartInstance extends NextInstance {
 
   public get deploymentId() {
     return this._deploymentId
+  }
+
+  public get immutableAssetToken() {
+    return process.env.IS_TURBOPACK_TEST ? this._immutableAssetToken : undefined
   }
 
   public get cliOutput() {
@@ -132,6 +137,9 @@ export class NextStartInstance extends NextInstance {
         )
         this._deploymentId =
           requiredServerFiles.config?.deploymentId || undefined
+        this._immutableAssetToken =
+          requiredServerFiles.config?.experimental.immutableAssetToken ||
+          undefined
       } catch {}
     }
 
@@ -284,6 +292,9 @@ export class NextStartInstance extends NextInstance {
         )
       )
       this._deploymentId = requiredServerFiles.config?.deploymentId || undefined
+      this._immutableAssetToken =
+        requiredServerFiles.config?.experimental.immutableAssetToken ||
+        undefined
     } catch {}
 
     return result
