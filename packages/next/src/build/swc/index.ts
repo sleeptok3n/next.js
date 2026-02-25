@@ -341,7 +341,6 @@ async function tryLoadWasmWithFallback(
 ): Promise<Binding | undefined> {
   try {
     let bindings = await loadWasm('')
-    // @ts-expect-error TODO: this event has a wrong type.
     ;(
       require('../../telemetry/events/swc-load-failure') as typeof import('../../telemetry/events/swc-load-failure')
     ).eventSwcLoadFailure({
@@ -369,7 +368,6 @@ async function tryLoadWasmWithFallback(
     }
     await downloadWasmPromise
     let bindings = await loadWasm(wasmDirectory)
-    // @ts-expect-error TODO: this event has a wrong type.
     ;(
       require('../../telemetry/events/swc-load-failure') as typeof import('../../telemetry/events/swc-load-failure')
     ).eventSwcLoadFailure({
@@ -420,7 +418,6 @@ async function logLoadFailure(attempts: any, triedWasm = false) {
     Log.warn(attempt)
   }
 
-  // @ts-expect-error TODO: this event has a wrong type.
   await (
     require('../../telemetry/events/swc-load-failure') as typeof import('../../telemetry/events/swc-load-failure')
   ).eventSwcLoadFailure({
