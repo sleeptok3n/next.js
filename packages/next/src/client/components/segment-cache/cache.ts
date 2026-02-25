@@ -90,6 +90,7 @@ import {
 } from '../../../shared/lib/segment-cache/segment-value-encoding'
 import type {
   FlightRouterState,
+  InitialRSCPayload,
   NavigationFlightResponse,
 } from '../../../shared/lib/app-router-types'
 import { ResponseCompletenessMarker } from '../../../shared/lib/app-router-types'
@@ -2269,8 +2270,8 @@ export function writeDynamicRenderResponseIntoCache(
     | FetchStrategy.PPR
     | FetchStrategy.PPRRuntime
     | FetchStrategy.Full,
-  responseHeaders: Headers,
-  serverData: NavigationFlightResponse,
+  responseHeaders: Headers | undefined,
+  serverData: NavigationFlightResponse | InitialRSCPayload,
   isResponsePartial: boolean,
   headVaryParams: VaryParams | null,
   staleAt: number,
@@ -2278,9 +2279,9 @@ export function writeDynamicRenderResponseIntoCache(
   spawnedEntries: Map<SegmentRequestKey, PendingSegmentCacheEntry> | null
 ): Array<FulfilledSegmentCacheEntry> | null {
   const buildId =
-    responseHeaders.get(NEXT_NAV_DEPLOYMENT_ID_HEADER) ?? serverData.b
+    responseHeaders?.get(NEXT_NAV_DEPLOYMENT_ID_HEADER) ?? serverData.b
 
-  if (buildId !== getNavigationBuildId()) {
+  if (buildId && buildId !== getNavigationBuildId()) {
     // The server build does not match the client. Treat as a 404. During
     // an actual navigation, the router will trigger an MPA navigation.
     if (spawnedEntries !== null) {
@@ -2733,7 +2734,7 @@ type ProcessedStaticStageResponse = {
  */
 export async function processStaticStageResponse(
   now: number,
-  serverData: NavigationFlightResponse
+  serverData: NavigationFlightResponse | InitialRSCPayload
 ): Promise<ProcessedStaticStageResponse> {
   const staleAt = await getStaleAt(now, serverData.s)
 
@@ -2753,8 +2754,8 @@ export async function processStaticStageResponse(
  */
 export function writeStaticStageResponseIntoCache(
   now: number,
-  serverData: NavigationFlightResponse,
-  responseHeaders: Headers,
+  serverData: NavigationFlightResponse | InitialRSCPayload,
+  responseHeaders: Headers | undefined,
   headVaryParams: VaryParams | null,
   staleAt: number,
   route: FulfilledRouteCacheEntry

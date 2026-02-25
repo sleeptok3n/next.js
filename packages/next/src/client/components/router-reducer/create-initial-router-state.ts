@@ -1,5 +1,4 @@
-import type { FlightDataPath } from '../../../shared/lib/app-router-types'
-import type { VaryParamsThenable } from '../../../shared/lib/segment-cache/vary-params-decoding'
+import type { InitialRSCPayload } from '../../../shared/lib/app-router-types'
 
 import { createHrefFromUrl } from './create-href-from-url'
 import { extractPathFromFlightRouterState } from './compute-changed-path'
@@ -10,33 +9,37 @@ import { createInitialCacheNodeForHydration } from './ppr-navigations'
 import {
   convertRootFlightRouterStateToRouteTree,
   writeInitialSeedDataIntoCache,
+  processStaticStageResponse,
+  writeStaticStageResponseIntoCache,
 } from '../segment-cache/cache'
+import { decodeStaticStage } from './fetch-server-response'
 import { discoverKnownRoute } from '../segment-cache/optimistic-routes'
 import type { NormalizedSearch } from '../segment-cache/cache-key'
 
 export interface InitialRouterStateParameters {
   navigatedAt: number
-  initialCanonicalUrlParts: string[]
-  initialRenderedSearch: string
-  initialFlightData: FlightDataPath[]
-  initialCouldBeIntercepted: boolean
-  initialPrerendered: boolean
-  initialStaleTime: AsyncIterable<number> | undefined
-  initialHeadVaryParams: VaryParamsThenable | null
+  initialRSCPayload: InitialRSCPayload
+  initialFlightStreamForCache?: ReadableStream<Uint8Array> | null
   location: Location | null
 }
 
 export function createInitialRouterState({
   navigatedAt,
-  initialFlightData,
-  initialCanonicalUrlParts,
-  initialRenderedSearch,
-  initialCouldBeIntercepted,
-  initialPrerendered,
-  initialStaleTime,
-  initialHeadVaryParams,
+  initialRSCPayload,
+  initialFlightStreamForCache,
   location,
 }: InitialRouterStateParameters): AppRouterState {
+  const {
+    c: initialCanonicalUrlParts,
+    f: initialFlightData,
+    q: initialRenderedSearch,
+    i: initialCouldBeIntercepted,
+    S: initialPrerendered,
+    s: initialStaleTime,
+    l: initialStaticStageByteLength,
+    h: initialHeadVaryParams,
+  } = initialRSCPayload
+
   // When initialized on the server, the canonical URL is provided as an array of parts.
   // This is to ensure that when the RSC payload streamed to the client, crawlers don't interpret it
   // as a URL that should be crawled.
@@ -97,17 +100,55 @@ export function createInitialRouterState({
     // Write the initial seed data into the segment cache so subsequent
     // navigations to the initial page can serve cached segments instantly.
     if (initialSeedData !== null && initialStaleTime !== undefined) {
-      // Currently only fully static pages include initialStaleTime.
-      route.isFullyStatic = true
+      if (
+        initialStaticStageByteLength !== undefined &&
+        initialFlightStreamForCache != null
+      ) {
+        // Partially static page — truncate the cloned Flight stream at the
+        // static stage byte boundary, decode, and cache the static subset.
+        decodeStaticStage<InitialRSCPayload>(
+          initialFlightStreamForCache,
+          initialStaticStageByteLength,
+          undefined // request headers - not needed for the initial render
+        ).then(
+          async (staticStageResponse) => {
+            const now = Date.now()
+            const { headVaryParams, staleAt } =
+              await processStaticStageResponse(now, staticStageResponse)
 
-      writeInitialSeedDataIntoCache(
-        route,
-        initialRouteTree,
-        initialSeedData,
-        initialHead,
-        initialStaleTime,
-        initialHeadVaryParams
-      )
+            writeStaticStageResponseIntoCache(
+              now,
+              staticStageResponse,
+              undefined, // response headers - not needed for the initial render
+              headVaryParams,
+              staleAt,
+              route
+            )
+          },
+          () => {
+            // The static stage processing failed. Not fatal — the page rendered
+            // normally, we just won't write into the cache.
+          }
+        )
+      } else {
+        // Fully static page — cache the entire decoded seed data as-is.
+        route.isFullyStatic = true
+
+        writeInitialSeedDataIntoCache(
+          route,
+          initialRouteTree,
+          initialSeedData,
+          initialHead,
+          initialStaleTime,
+          initialHeadVaryParams
+        )
+
+        // Cancel the stream clone — fully static path doesn't need it.
+        initialFlightStreamForCache?.cancel()
+      }
+    } else {
+      // No caching — cancel the unused stream clone.
+      initialFlightStreamForCache?.cancel()
     }
   }
 
