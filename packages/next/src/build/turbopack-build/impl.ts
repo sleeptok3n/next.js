@@ -1,8 +1,8 @@
 // Import cpu-profile first to start profiling early if enabled
 import { saveCpuProfile } from '../../server/lib/cpu-profile'
 import path from 'path'
-import { validateTurboNextConfig } from '../../lib/turbopack-warning'
-import { isFileSystemCacheEnabledForBuild } from '../../shared/lib/turbopack/utils'
+// import { validateTurboNextConfig } from '../../lib/turbopack-warning'
+import { isFileSystemCacheEnabledForBuild } from '../../shared/lib/turbopack/is-file-system-cache-enabled-for-build'
 import { NextBuildContext } from '../build-context'
 import { createDefineEnv, getBindingsSync } from '../swc'
 import { installBindings } from '../swc/install-bindings'
@@ -19,7 +19,8 @@ import { Telemetry } from '../../telemetry/storage'
 import { setGlobal } from '../../trace'
 import { isCI } from '../../server/ci-info'
 import { backgroundLogCompilationEvents } from '../../shared/lib/turbopack/compilation-events'
-import { getSupportedBrowsers, printBuildErrors } from '../utils'
+import { getSupportedBrowsers } from '../get-supported-browsers'
+import { printBuildErrors } from '../print-build-errors'
 import { normalizePath } from '../../lib/normalize-path'
 import type {
   ProjectOptions,
@@ -32,10 +33,10 @@ export async function turbopackBuild(): Promise<{
   buildTraceContext: undefined
   shutdownPromise: Promise<void>
 }> {
-  await validateTurboNextConfig({
-    dir: NextBuildContext.dir!,
-    configPhase: PHASE_PRODUCTION_BUILD,
-  })
+  // await validateTurboNextConfig({
+  //   dir: NextBuildContext.dir!,
+  //   configPhase: PHASE_PRODUCTION_BUILD,
+  // })
 
   const config = NextBuildContext.config!
   const dir = NextBuildContext.dir!

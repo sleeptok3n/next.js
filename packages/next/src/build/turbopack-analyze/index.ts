@@ -3,11 +3,11 @@ import type { __ApiPreviewProps } from '../../server/api-utils'
 
 import path from 'path'
 import { validateTurboNextConfig } from '../../lib/turbopack-warning'
-import { isFileSystemCacheEnabledForBuild } from '../../shared/lib/turbopack/utils'
+import { isFileSystemCacheEnabledForBuild } from '../../shared/lib/turbopack/is-file-system-cache-enabled-for-build'
 import { createDefineEnv, loadBindings } from '../swc'
 import { isCI } from '../../server/ci-info'
 import { backgroundLogCompilationEvents } from '../../shared/lib/turbopack/compilation-events'
-import { getSupportedBrowsers } from '../utils'
+import { getSupportedBrowsers } from '../get-supported-browsers'
 import { normalizePath } from '../../lib/normalize-path'
 import { PHASE_PRODUCTION_BUILD } from '../../shared/lib/constants'
 
