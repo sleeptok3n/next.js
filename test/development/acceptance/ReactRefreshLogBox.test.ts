@@ -159,6 +159,7 @@ describe('ReactRefreshLogBox', () => {
       if (isTurbopack) {
         await expect(browser).toDisplayRedbox(`
          {
+           "code": "E394",
            "description": "no",
            "environmentLabel": null,
            "label": "Runtime Error",
@@ -202,6 +203,7 @@ describe('ReactRefreshLogBox', () => {
       } else {
         await expect(browser).toDisplayRedbox(`
          {
+           "code": "E394",
            "description": "no",
            "environmentLabel": null,
            "label": "Runtime Error",
@@ -1106,6 +1108,7 @@ describe('ReactRefreshLogBox', () => {
     } else {
       await expect(browser).toDisplayRedbox(`
        {
+         "code": "E394",
          "description": "{"a":1,"b":"x"}",
          "environmentLabel": null,
          "label": "Runtime Error",
@@ -1155,6 +1158,7 @@ describe('ReactRefreshLogBox', () => {
     } else {
       await expect(browser).toDisplayRedbox(`
        {
+         "code": "E394",
          "description": "class Hello {
        }",
          "environmentLabel": null,
@@ -1202,6 +1206,7 @@ describe('ReactRefreshLogBox', () => {
     } else {
       await expect(browser).toDisplayRedbox(`
        {
+         "code": "E394",
          "description": "string error",
          "environmentLabel": null,
          "label": "Runtime Error",
@@ -1248,6 +1253,7 @@ describe('ReactRefreshLogBox', () => {
     } else {
       await expect(browser).toDisplayRedbox(`
        {
+         "code": "E394",
          "description": "A null error was thrown, see here for more info: https://nextjs.org/docs/messages/threw-undefined",
          "environmentLabel": null,
          "label": "Runtime Error",
@@ -1403,6 +1409,7 @@ describe('ReactRefreshLogBox', () => {
     if (isTurbopack) {
       await expect(browser).toDisplayRedbox(`
        {
+         "code": "E394",
          "description": "anonymous error!",
          "environmentLabel": null,
          "label": "Runtime Error",
@@ -1419,6 +1426,7 @@ describe('ReactRefreshLogBox', () => {
     } else {
       await expect(browser).toDisplayRedbox(`
        {
+         "code": "E394",
          "description": "anonymous error!",
          "environmentLabel": null,
          "label": "Runtime Error",
@@ -1460,6 +1468,7 @@ describe('ReactRefreshLogBox', () => {
 
     await expect(browser).toDisplayRedbox(`
      {
+       "code": "E394",
        "description": "Invalid URL",
        "environmentLabel": null,
        "label": "Runtime TypeError",
