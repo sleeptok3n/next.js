@@ -1,7 +1,7 @@
 // Import cpu-profile first to start profiling early if enabled
 import { saveCpuProfile } from '../../server/lib/cpu-profile'
 import path from 'path'
-// import { validateTurboNextConfig } from '../../lib/turbopack-warning'
+import { validateTurboNextConfig } from '../../lib/turbopack-warning'
 import { isFileSystemCacheEnabledForBuild } from '../../shared/lib/turbopack/is-file-system-cache-enabled-for-build'
 import { NextBuildContext } from '../build-context'
 import { createDefineEnv, getBindingsSync } from '../swc'
@@ -33,10 +33,10 @@ export async function turbopackBuild(): Promise<{
   buildTraceContext: undefined
   shutdownPromise: Promise<void>
 }> {
-  // await validateTurboNextConfig({
-  //   dir: NextBuildContext.dir!,
-  //   configPhase: PHASE_PRODUCTION_BUILD,
-  // })
+  await validateTurboNextConfig({
+    dir: NextBuildContext.dir!,
+    configPhase: PHASE_PRODUCTION_BUILD,
+  })
 
   const config = NextBuildContext.config!
   const dir = NextBuildContext.dir!
